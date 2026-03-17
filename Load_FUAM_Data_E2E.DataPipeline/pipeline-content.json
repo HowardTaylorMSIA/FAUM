@@ -1,0 +1,527 @@
+{
+  "properties": {
+    "activities": [
+      {
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "281549ec-02f7-9073-46e2-703d0ce03b1e",
+            "type": "PipelineReference"
+          },
+          "parameters": {
+            "fromDateDayAgo": {
+              "value": "@pipeline().parameters.activity_days_in_scope",
+              "type": "Expression"
+            },
+            "display_data": {
+              "value": "@pipeline().parameters.display_data",
+              "type": "Expression"
+            },
+            "anonymize_tables": {
+              "value": "@pipeline().parameters.activity_anonymize_tables",
+              "type": "Expression"
+            },
+            "anonymize_files": {
+              "value": "@pipeline().parameters.activity_anonymize_files",
+              "type": "Expression"
+            },
+            "anonymize_after_days": {
+              "value": "@pipeline().parameters.activity_anonymize_after_days",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true
+        },
+        "policy": {
+          "secureInput": false
+        },
+        "name": "Load_Activities",
+        "dependsOn": [
+          {
+            "activity": "Load_Inventory",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "10fb28e3-d244-a769-4734-3b5b26c4d593",
+            "type": "PipelineReference"
+          },
+          "parameters": {
+            "display_data": {
+              "value": "@pipeline().parameters.display_data",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true
+        },
+        "policy": {
+          "secureInput": false
+        },
+        "name": "Load_Workspaces",
+        "dependsOn": []
+      },
+      {
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "10c5a837-32fd-9c3b-421f-03b4bbb82a9b",
+            "type": "PipelineReference"
+          },
+          "parameters": {
+            "display_data": {
+              "value": "@pipeline().parameters.display_data",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true
+        },
+        "policy": {
+          "secureInput": false
+        },
+        "name": "Load_Capacities",
+        "description": "Load Capacities",
+        "dependsOn": []
+      },
+      {
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "08ca38ea-0b08-a9b2-4f09-10ea1a69437d",
+            "type": "PipelineReference"
+          },
+          "parameters": {
+            "display_data": {
+              "value": "@pipeline().parameters.display_data",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true
+        },
+        "policy": {
+          "secureInput": false
+        },
+        "name": "Load_Capacity_Refreshables",
+        "dependsOn": [
+          {
+            "activity": "Load_Active_Items",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "d9e92292-333c-81b7-4c27-94d4f68a315b",
+            "type": "PipelineReference"
+          },
+          "parameters": {
+            "metric_days_in_scope": {
+              "value": "@pipeline().parameters.metric_days_in_scope",
+              "type": "Expression"
+            },
+            "metric_workspace": {
+              "value": "@pipeline().parameters.metric_workspace",
+              "type": "Expression"
+            },
+            "metric_dataset": {
+              "value": "@pipeline().parameters.metric_dataset",
+              "type": "Expression"
+            },
+            "display_data": {
+              "value": "@pipeline().parameters.display_data",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true
+        },
+        "policy": {
+          "secureInput": false
+        },
+        "name": "Load_Capacity_Metrics",
+        "dependsOn": [
+          {
+            "activity": "Load_Workspaces",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          },
+          {
+            "activity": "Load_Capacities",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "50ab8836-2f8f-b631-4af3-f44d1cff4ec8",
+            "type": "PipelineReference"
+          },
+          "parameters": {
+            "has_tenant_domains": {
+              "value": "@pipeline().parameters.has_tenant_domains",
+              "type": "Expression"
+            },
+            "extract_powerbi_artifacts_only": {
+              "value": "@pipeline().parameters.extract_powerbi_artifacts_only",
+              "type": "Expression"
+            },
+            "display_data": {
+              "value": "@pipeline().parameters.display_data",
+              "type": "Expression"
+            },
+            "optional_keyvault_name": {
+              "value": "@pipeline().parameters.optional_keyvault_name",
+              "type": "Expression"
+            },
+            "optional_keyvault_sp_tenantId_secret_name": {
+              "value": "@pipeline().parameters.optional_keyvault_sp_tenantId_secret_name",
+              "type": "Expression"
+            },
+            "optional_keyvault_sp_clientId_secret_name": {
+              "value": "@pipeline().parameters.optional_keyvault_sp_clientId_secret_name",
+              "type": "Expression"
+            },
+            "optional_keyvault_sp_secret_secret_name": {
+              "value": "@pipeline().parameters.optional_keyvault_sp_secret_secret_name",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true
+        },
+        "policy": {
+          "secureInput": false
+        },
+        "name": "Load_Inventory",
+        "dependsOn": [
+          {
+            "activity": "Load_Capacity_Refreshables",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "5358bbdd-2cdc-bcc8-4669-d721df37b3c1",
+            "type": "PipelineReference"
+          },
+          "parameters": {
+            "display_data": {
+              "value": "@pipeline().parameters.display_data",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true
+        },
+        "policy": {
+          "secureInput": false
+        },
+        "name": "Load_Tenant_Settings",
+        "dependsOn": [
+          {
+            "activity": "Load_Activities",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "cb19075b-177f-8e04-482d-f563247740e0",
+            "type": "PipelineReference"
+          },
+          "parameters": {
+            "display_data": {
+              "value": "@pipeline().parameters.display_data",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true
+        },
+        "policy": {
+          "secureInput": false
+        },
+        "name": "Load_Delegated_Tenant_Settings_Overrides",
+        "dependsOn": [
+          {
+            "activity": "Load_Tenant_Settings",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "ce144b31-7421-9320-49fe-a89f244d50f3",
+            "type": "PipelineReference"
+          },
+          "parameters": {
+            "display_data": {
+              "value": "@pipeline().parameters.display_data",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true
+        },
+        "policy": {
+          "secureInput": false
+        },
+        "name": "Load_Active_Items",
+        "dependsOn": []
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "a2a56c4c-887d-ae47-4ad2-71ff40988ff4",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "sessionTag": "fuam"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Generate_Calendar_Table",
+        "dependsOn": [
+          {
+            "activity": "Load_Active_Items",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "0f966c41-c466-bfe0-43b1-2a4b3fa4d2f0",
+            "type": "PipelineReference"
+          },
+          "parameters": {
+            "display_data": {
+              "value": "@pipeline().parameters.display_data",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true
+        },
+        "policy": {
+          "secureInput": false
+        },
+        "name": "Load_Git_Connections_E2E",
+        "dependsOn": [
+          {
+            "activity": "Load_Delegated_Tenant_Settings_Overrides",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "TridentNotebook",
+        "typeProperties": {
+          "notebookId": "4562daae-be42-ab30-4671-2816efaa87cd",
+          "workspaceId": "00000000-0000-0000-0000-000000000000",
+          "sessionTag": "fuam"
+        },
+        "policy": {
+          "timeout": "0.12:00:00",
+          "retry": 0,
+          "retryIntervalInSeconds": 30,
+          "secureInput": false,
+          "secureOutput": false
+        },
+        "name": "Check_FUAM_Version",
+        "dependsOn": [
+          {
+            "activity": "Generate_Calendar_Table",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "IfCondition",
+        "typeProperties": {
+          "expression": {
+            "value": "@if(pipeline().parameters.has_tenant_domains, 1, 0)",
+            "type": "Expression"
+          },
+          "ifTrueActivities": [
+            {
+              "type": "ExecutePipeline",
+              "typeProperties": {
+                "pipeline": {
+                  "referenceName": "4eaf112f-d1a8-86dd-4597-98f4d5856754",
+                  "type": "PipelineReference"
+                },
+                "parameters": {
+                  "display_data": {
+                    "value": "@pipeline().parameters.display_data",
+                    "type": "Expression"
+                  }
+                },
+                "waitOnCompletion": true
+              },
+              "policy": {
+                "secureInput": false
+              },
+              "name": "Load_Domains",
+              "dependsOn": []
+            }
+          ],
+          "ifFalseActivities": []
+        },
+        "name": "If has domains",
+        "dependsOn": [
+          {
+            "activity": "Load_Git_Connections_E2E",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "8fe45130-14d4-9e34-459b-57388c63e722",
+            "type": "PipelineReference"
+          },
+          "parameters": {
+            "display_data": {
+              "value": "@pipeline().parameters.display_data",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true
+        },
+        "policy": {
+          "secureInput": false
+        },
+        "name": "Load_WidelyShared_OrganizationLinks",
+        "dependsOn": [
+          {
+            "activity": "If has domains",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      },
+      {
+        "type": "ExecutePipeline",
+        "typeProperties": {
+          "pipeline": {
+            "referenceName": "12f3b80e-2df2-8a5c-4a80-c0d65ca5cec8",
+            "type": "PipelineReference"
+          },
+          "parameters": {
+            "display_data": {
+              "value": "@pipeline().parameters.display_data",
+              "type": "Expression"
+            }
+          },
+          "waitOnCompletion": true
+        },
+        "policy": {
+          "secureInput": false
+        },
+        "name": "Load_WidelyShared_PublishedToWeb",
+        "dependsOn": [
+          {
+            "activity": "Load_WidelyShared_OrganizationLinks",
+            "dependencyConditions": [
+              "Completed"
+            ]
+          }
+        ]
+      }
+    ],
+    "parameters": {
+      "has_tenant_domains": {
+        "type": "bool",
+        "defaultValue": false
+      },
+      "extract_powerbi_artifacts_only": {
+        "type": "bool",
+        "defaultValue": false
+      },
+      "metric_days_in_scope": {
+        "type": "int",
+        "defaultValue": 14
+      },
+      "metric_workspace": {
+        "type": "string",
+        "defaultValue": "7960617c-9a26-4cdb-a980-7fc6f49ac999"
+      },
+      "metric_dataset": {
+        "type": "string",
+        "defaultValue": "Fabric Capacity Metrics"
+      },
+      "activity_days_in_scope": {
+        "type": "int",
+        "defaultValue": 14
+      },
+      "display_data": {
+        "type": "bool",
+        "defaultValue": false
+      },
+      "optional_keyvault_name": {
+        "type": "string"
+      },
+      "optional_keyvault_sp_tenantId_secret_name": {
+        "type": "string"
+      },
+      "optional_keyvault_sp_clientId_secret_name": {
+        "type": "string"
+      },
+      "optional_keyvault_sp_secret_secret_name": {
+        "type": "string"
+      },
+      "optional_keyvault_sp_enterprise_object_id_secret_name": {
+        "type": "string"
+      },
+      "activity_anonymize_tables": {
+        "type": "bool",
+        "defaultValue": false
+      },
+      "activity_anonymize_files": {
+        "type": "bool",
+        "defaultValue": false
+      },
+      "activity_anonymize_after_days": {
+        "type": "int",
+        "defaultValue": 0
+      }
+    }
+  }
+}
